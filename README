@@ -1,0 +1,92 @@
+This library controls an mPower switchable power bar from Ubiquity networks.
+
+API
+
+#include <mpower/mpower.h>
+
+struct mPowerDev *mPowerInit(const char *hostname);
+
+       Initializes a connection to the mPower device "hostname".
+
+       RETURN VALUE
+
+       a pointer to an initialized device descriptor or NULL in case
+       of error.  Note that this does not actually try to connect to
+       hostname. So this function won't return NULL if "hostname"
+       doesn't exist or is not reachable.
+
+void mPowerEnd(struct mPowerDev *dev);
+
+     Terminates the connection to the mPower device and frees memory
+     associated with the descriptor.
+
+int mPowerLogin(struct mPowerDev *dev, const char *user, const char *passwd);
+
+    Connects and logs into the device. 
+
+    PARAMETERS
+
+    dev - device descriptor returned by mPowerInit().
+    user - the user name to log in (factory default is "ubnt")
+    passwd - the password associated to the above user (factory
+             default is "ubnt").
+    Note that the password should be protected with appropriate means
+    in the client software to avoid disclosing it to unauthorized 3rd
+    parties. Don't publish source code with sensitive passwords
+    embedded to GitHub !
+
+    RETURN VALUE
+
+    if mPowerLogin() succeeds in connecting and logging in, it returns
+    0. Otherwise it returns -1.
+
+int mPowerSetOutput(struct mPowerDev *dev, int output, int value);
+
+    Sets the state of one output
+
+    PARAMETERS
+
+    dev - device descriptor returned by mPowerInit().
+    output - the output number (starting at 1) to be controlled
+    value - the state of the output 0: switched off 1: switched on
+
+    RETURN VALUE
+
+    if mPowerSetOutput() succeeds, it returns 0, otherwise -1.
+
+int mPowerQuertOutputs(struct mPowerDev *dev);
+
+    Query the state of the mPower device.
+
+    PARAMETER
+
+    dev - device descriptor returned by mPowerInit().
+
+    RETURN VALUE
+
+    if mPowerQueryOutputs() succeeds, it returns 0, otherwise -1.
+
+void mPowerPrintOutputs(struct mPowerDev *dev, FILE *out);
+
+    Prints the state of the mPower outputs.
+
+    PARAMETERS
+
+    dev - device descriptor returned by mPowerInit().
+    out - an open FILE to which the state will be printed
+
+void mPowerGetOutputs(struct mPowerDev *dev, struct mPowerStatus *outputs)
+
+    Gets the status of mPower outputs
+
+    PARAMETERS
+
+    dev - device descriptor returned by mPowerInit().
+    outputs - a pointer to an array of  structures that will get the
+    current values. The array must be at least MPOWER_NUM_OUTPUTS
+    long.
+
+    Note that strings (char *) fields in the mPowerStatus are
+    duplicated using strdup() and should be free()d manually before
+    freeing the memory allocated to the structure passed in argument.
+
